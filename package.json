@@ -5,7 +5,6 @@
   "main": "index.html",
   "scripts": {
     "dev": "serve .",
-    "build": "echo 'Static site - no build step needed' && exit 0",
     "start": "serve . -s",
     "preview": "serve .",
     "lint": "echo 'Linting JavaScript files...' && npx jshint js/*.js",
