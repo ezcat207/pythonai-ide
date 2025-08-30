@@ -5,11 +5,12 @@
   "main": "index.html",
   "scripts": {
     "dev": "serve .",
-    "build": "echo 'Static files - no build needed'",
+    "build": "echo 'Static files ready for deployment'",
     "start": "serve . -s",
     "preview": "serve .",
     "lint": "echo 'Linting JavaScript files...' && npx jshint js/*.js",
-    "test": "echo 'Running tests...' && node test.js"
+    "test": "echo 'Running tests...' && node test.js",
+    "deploy": "vercel --prod"
   },
   "keywords": [
     "python",
