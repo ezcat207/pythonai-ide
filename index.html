@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PythonAI | Python Learning IDE with AI Assistant</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="ide-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fab fa-python"></i>
+                    <span>PythonAI</span>
+                    <span class="tagline">Learning IDE</span>
+                </div>
+                <nav class="nav-buttons">
+                    <button class="nav-btn" data-action="new">
+                        <i class="fas fa-plus"></i> New
+                    </button>
+                    <button class="nav-btn" data-action="save">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button class="nav-btn" data-action="open">
+                        <i class="fas fa-folder-open"></i> Open
+                    </button>
+                    <button class="nav-btn" data-action="settings">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </nav>
+            </div>
+            <div class="header-center">
+                <div class="project-info">
+                    <span class="project-name" id="projectName">hello_world.py</span>
+                    <span class="project-status unsaved">• Unsaved</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="run-controls">
+                    <button class="run-btn primary" id="runButton">
+                        <i class="fas fa-play"></i> Run
+                    </button>
+                    <button class="run-btn" id="stopButton">
+                        <i class="fas fa-stop"></i> Stop
+                    </button>
+                </div>
+                <div class="user-menu">
+                    <button class="user-btn" id="userButton">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userName">Guest</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-tabs">
+                    <button class="sidebar-tab active" data-tab="projects">
+                        <i class="fas fa-folder"></i>
+                        Projects
+                    </button>
+                    <button class="sidebar-tab" data-tab="tutorials">
+                        <i class="fas fa-graduation-cap"></i>
+                        Tutorials
+                    </button>
+                    <button class="sidebar-tab" data-tab="examples">
+                        <i class="fas fa-code"></i>
+                        Examples
+                    </button>
+                </div>
+                
+                <div class="sidebar-content">
+                    <!-- Projects Tab -->
+                    <div class="tab-content active" id="projects-tab">
+                        <div class="section-header">
+                            <h3>My Projects</h3>
+                            <button class="btn-icon" data-action="new-project">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="project-list" id="projectList">
+                            <div class="project-item active">
+                                <i class="fab fa-python"></i>
+                                <span>hello_world.py</span>
+                                <div class="project-actions">
+                                    <button class="btn-icon small" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tutorials Tab -->
+                    <div class="tab-content" id="tutorials-tab">
+                        <div class="section-header">
+                            <h3>Learn Python AI</h3>
+                        </div>
+                        <div class="tutorial-list" id="tutorialList">
+                            <div class="tutorial-item" data-level="beginner">
+                                <div class="tutorial-info">
+                                    <h4>Python Basics</h4>
+                                    <p>Learn variables, loops, and functions</p>
+                                    <span class="difficulty beginner">Beginner</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="tutorial-item" data-level="intermediate">
+                                <div class="tutorial-info">
+                                    <h4>Data Science Basics</h4>
+                                    <p>Introduction to pandas and numpy</p>
+                                    <span class="difficulty intermediate">Intermediate</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="tutorial-item" data-level="advanced">
+                                <div class="tutorial-info">
+                                    <h4>Machine Learning</h4>
+                                    <p>Build your first AI model</p>
+                                    <span class="difficulty advanced">Advanced</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Examples Tab -->
+                    <div class="tab-content" id="examples-tab">
+                        <div class="section-header">
+                            <h3>Code Examples</h3>
+                        </div>
+                        <div class="example-list" id="exampleList">
+                            <div class="example-item">
+                                <i class="fas fa-robot"></i>
+                                <div class="example-info">
+                                    <h4>Chatbot</h4>
+                                    <p>Simple AI chatbot</p>
+                                </div>
+                            </div>
+                            <div class="example-item">
+                                <i class="fas fa-chart-bar"></i>
+                                <div class="example-info">
+                                    <h4>Data Visualization</h4>
+                                    <p>Create charts with Python</p>
+                                </div>
+                            </div>
+                            <div class="example-item">
+                                <i class="fas fa-brain"></i>
+                                <div class="example-info">
+                                    <h4>Neural Network</h4>
+                                    <p>Basic deep learning</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Editor Area -->
+            <div class="editor-container">
+                <div class="editor-header">
+                    <div class="file-tabs">
+                        <div class="file-tab active">
+                            <span>hello_world.py</span>
+                            <button class="tab-close">×</button>
+                        </div>
+                    </div>
+                    <div class="editor-actions">
+                        <button class="btn-icon" title="Code Health Check" id="healthCheckBtn">
+                            <i class="fas fa-heart-pulse"></i>
+                        </button>
+                        <button class="btn-icon" title="Format Code" id="formatBtn">
+                            <i class="fas fa-magic"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="editor-content">
+                    <div id="codeEditor" class="code-editor"></div>
+                </div>
+            </div>
+
+            <!-- AI Assistant Panel -->
+            <div class="ai-panel">
+                <div class="ai-header">
+                    <div class="ai-title">
+                        <i class="fas fa-robot"></i>
+                        <span>Gemini AI Assistant</span>
+                    </div>
+                    <div class="ai-controls">
+                        <button class="btn-icon" title="Clear Chat" id="clearChatBtn">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn-icon" title="Minimize" id="minimizeAIBtn">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="ai-content">
+                    <div class="ai-chat" id="aiChat">
+                        <div class="ai-message">
+                            <div class="message-avatar ai">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <p>Hello! I'm your AI assistant. I'm here to help you learn Python and AI programming. Ask me anything about your code!</p>
+                                <div class="quick-actions">
+                                    <button class="quick-btn" data-action="explain-code">Explain my code</button>
+                                    <button class="quick-btn" data-action="find-bugs">Find bugs</button>
+                                    <button class="quick-btn" data-action="improve-code">Improve my code</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-input-container">
+                        <div class="ai-input">
+                            <input type="text" placeholder="Ask me anything about Python or AI..." id="aiInput">
+                            <button class="send-btn" id="sendBtn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Panel -->
+        <div class="bottom-panel">
+            <div class="panel-tabs">
+                <button class="panel-tab active" data-tab="output">
+                    <i class="fas fa-terminal"></i>
+                    Output
+                </button>
+                <button class="panel-tab" data-tab="console">
+                    <i class="fas fa-code"></i>
+                    Console
+                </button>
+                <button class="panel-tab" data-tab="problems">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Problems
+                    <span class="badge" id="problemCount">0</span>
+                </button>
+            </div>
+            
+            <div class="panel-content">
+                <div class="tab-pane active" id="output-pane">
+                    <div class="output-header">
+                        <span class="output-status" id="outputStatus">Ready to run</span>
+                        <div class="output-actions">
+                            <button class="btn-icon small" title="Clear Output" id="clearOutputBtn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="output-content" id="outputContent">
+                        <div class="welcome-message">
+                            <p>👋 Welcome to PythonAI! Click the Run button to execute your code.</p>
+                            <p>💡 Tip: Ask the AI assistant for help with your code anytime!</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-pane" id="console-pane">
+                    <div class="console-content" id="consoleContent">
+                        <div class="console-line">
+                            <span class="prompt">>>> </span>
+                            <input type="text" class="console-input" placeholder="Interactive Python console">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-pane" id="problems-pane">
+                    <div class="problems-content" id="problemsContent">
+                        <div class="no-problems">
+                            <i class="fas fa-check-circle"></i>
+                            <p>No problems found. Great job!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Welcome to PythonAI</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Login</button>
+                    <button class="auth-tab" data-tab="register">Register</button>
+                </div>
+                
+                <form id="authForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-group" id="nameGroup" style="display: none;">
+                        <label for="name">Name</label>
+                        <input type="text" id="name">
+                    </div>
+                    <button type="submit" class="btn primary full-width">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/project-manager.js"></script>
+    <script src="js/code-executor.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

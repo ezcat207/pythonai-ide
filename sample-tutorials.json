@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Variables - Storing Information",
+    "description": "Learn how to store and use data with variables",
+    "content": "Variables are like labeled boxes that store information. You can put different types of data in them and use them later!",
+    "difficulty_level": "beginner",
+    "category": "Python Basics",
+    "order_index": 2,
+    "starter_code": "# Variables - storing information\nname = \"Your Name\"\nage = 10\nfavorite_color = \"blue\"\n\n# Use your variables\nprint(\"Hi! My name is\", name)\nprint(\"I am\", age, \"years old\")\nprint(\"My favorite color is\", favorite_color)",
+    "expected_output": "Hi! My name is Your Name\nI am 10 years old\nMy favorite color is blue",
+    "hints": ["Use quotes for text like names", "Numbers don't need quotes", "Try changing the values"],
+    "is_published": true
+  },
+  {
+    "title": "Making Decisions with If",
+    "description": "Teach your programs to make smart decisions",
+    "content": "If statements help your code make choices based on different conditions. They make your programs smart!",
+    "difficulty_level": "beginner", 
+    "category": "Python Basics",
+    "order_index": 3,
+    "starter_code": "# Making decisions with if statements\nage = 12\n\nif age < 10:\n    print(\"You are a little kid!\")\nelif age < 13:\n    print(\"You are a big kid!\")\nelse:\n    print(\"You are a teenager!\")",
+    "expected_output": "You are a big kid!",
+    "hints": ["Remember the colon after if", "Use proper indentation", "Try different ages"],
+    "is_published": true
+  },
+  {
+    "title": "Loops - Repeating Actions", 
+    "description": "Learn to repeat actions efficiently with loops",
+    "content": "Loops help you do things multiple times without writing the same code over and over!",
+    "difficulty_level": "intermediate",
+    "category": "Python Basics",
+    "order_index": 4,
+    "starter_code": "# Loops - repeating actions\n\n# Count to 5\nfor i in range(1, 6):\n    print(\"Count:\", i)\n\n# Loop through colors\ncolors = [\"red\", \"blue\", \"green\"]\nfor color in colors:\n    print(\"I like\", color)",
+    "expected_output": "Count: 1\nCount: 2\nCount: 3\nCount: 4\nCount: 5\nI like red\nI like blue\nI like green",
+    "hints": ["Use range() for counting", "Lists use square brackets", "Remember the colon and indentation"],
+    "is_published": true
+  },
+  {
+    "title": "Build Your First AI Chatbot",
+    "description": "Create a simple AI chatbot that responds to messages",
+    "content": "Learn to build your very own AI chatbot! This fun project combines everything you have learned.",
+    "difficulty_level": "advanced",
+    "category": "AI Projects", 
+    "order_index": 5,
+    "starter_code": "# Simple AI Chatbot\nimport random\n\n# Chatbot responses\nresponses = {\n    'hello': ['Hi there!', 'Hello!', 'Hey!']\n    'how are you': ['I am great!', 'Doing well!']\n    'bye': ['Goodbye!', 'See you later!']\n}\n\nprint(\"🤖 Chatbot: Hello! I'm your AI friend!\")\nuser_input = input(\"You: \")\n\n# Simple response logic\nif 'hello' in user_input.lower():\n    print(\"🤖 Chatbot:\", random.choice(responses['hello']))\nelif 'bye' in user_input.lower():\n    print(\"🤖 Chatbot:\", random.choice(responses['bye']))\nelse:\n    print(\"🤖 Chatbot: That's interesting! Tell me more!\")",
+    "expected_output": "🤖 Chatbot: Hello! I'm your AI friend!\nYou: [user input]\n🤖 Chatbot: [response based on input]",
+    "hints": ["Use dictionaries for responses", "random.choice picks random items", "Make your chatbot friendly!"],
+    "is_published": true
+  }
+]
