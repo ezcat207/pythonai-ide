@@ -8,6 +8,10 @@ class AIAssistant {
         this.conversationHistory = [];
         this.isMinimized = false;
         
+        // Gemini API configuration
+        this.geminiApiKey = 'AIzaSyDMA5MaWlgh0C_6zLs6dAI7X-LB6YptIjs';
+        this.geminiApiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+        
         this.init();
     }
 
@@ -49,6 +53,14 @@ class AIAssistant {
             if (e.target.classList.contains('quick-btn')) {
                 const action = e.target.dataset.action;
                 this.handleQuickAction(action);
+            }
+        });
+
+        // AI feature buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('ai-feature-btn')) {
+                const feature = e.target.dataset.feature;
+                this.handleAIFeature(feature);
             }
         });
 
@@ -162,6 +174,52 @@ class AIAssistant {
         }
     }
 
+    async handleAIFeature(feature) {
+        if (this.isTyping) return;
+
+        const codeContext = this.getCodeContext();
+        
+        if (!codeContext.code.trim()) {
+            this.addMessage('Please write some code first to use AI features! 📝', 'ai');
+            return;
+        }
+
+        // Show user's action
+        this.addMessage(this.getAIFeatureLabel(feature), 'user');
+        
+        // Show typing indicator
+        this.showTypingIndicator();
+
+        try {
+            let response;
+            switch (feature) {
+                case 'auto-comment':
+                    await this.autoCommentCodeDirect(codeContext.code);
+                    return; // Exit early as we don't need chat response
+                case 'auto-syntax-fix':
+                    await this.autoSyntaxFixDirect(codeContext.code);
+                    return; // Exit early as we don't need chat response
+                case 'assist-diagnosis':
+                    response = await this.assistDiagnosis(codeContext.code);
+                    break;
+                case 'health-check':
+                    response = await this.codeHealthCheck(codeContext.code);
+                    break;
+                default:
+                    response = 'Unknown feature requested.';
+            }
+            
+            this.hideTypingIndicator();
+            this.addMessage(response, 'ai');
+            this.saveConversation(this.getAIFeatureLabel(feature), response, feature);
+            
+        } catch (error) {
+            this.hideTypingIndicator();
+            this.addMessage('Sorry, I had trouble with that AI feature. Please try again!', 'ai', true);
+            console.error('AI Feature error:', error);
+        }
+    }
+
     getQuickActionLabel(action) {
         const labels = {
             'explain-code': '🤔 Explain my code',
@@ -171,10 +229,41 @@ class AIAssistant {
         return labels[action] || action;
     }
 
+    getAIFeatureLabel(feature) {
+        const labels = {
+            'auto-comment': '📝 Auto Comment - Add smart comments',
+            'auto-syntax-fix': '🔧 Auto Syntax Fix - Fix code errors',
+            'assist-diagnosis': '🔍 Assist Diagnosis - Analyze code issues',
+            'health-check': '🎩 Code Health Check - Overall code quality'
+        };
+        return labels[feature] || feature;
+    }
+
     async sendToAI(message, context = null) {
-        // For now, we'll use a sophisticated simulation
-        // In production, integrate with actual Gemini API
-        return await this.simulateAIResponse(message, context);
+        try {
+            const response = await fetch(`${this.geminiApiUrl}?key=${this.geminiApiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ text: this.buildPrompt(message, context) }]
+                    }]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.candidates[0]?.content?.parts[0]?.text || 'Sorry, I couldn\'t process that request.';
+        } catch (error) {
+            console.error('Gemini API error:', error);
+            // Fallback to simulation on error
+            return await this.simulateAIResponse(message, context);
+        }
     }
 
     async simulateAIResponse(message, context) {
@@ -273,6 +362,173 @@ class AIAssistant {
         explanation += "\nWant me to explain any specific part in more detail? Just ask! 🤓";
         
         return explanation;
+    }
+
+    buildPrompt(message, context) {
+        let prompt = '';
+        
+        if (context && context.code) {
+            prompt += `You are an AI programming tutor helping kids learn Python. Here's the current code context:\n\n`;
+            prompt += `Project: ${context.projectName}\n`;
+            prompt += `Code:\n\`\`\`python\n${context.code}\n\`\`\`\n\n`;
+        }
+        
+        prompt += `User message: ${message}\n\n`;
+        prompt += `Please respond in a friendly, educational way that's appropriate for kids learning programming. Use emojis and simple explanations.`;
+        
+        return prompt;
+    }
+
+    async autoCommentCode(code) {
+        const prompt = `As an AI tutor for kids, please add helpful comments to this Python code. The comments should:
+1. Explain what each section does in simple terms
+2. Use kid-friendly language
+3. Include emojis to make it fun
+4. Help kids understand programming concepts
+
+Return the code with added comments:
+
+\`\`\`python\n${code}\n\`\`\`
+
+Make sure to maintain proper Python syntax and indentation.`;
+        
+        const response = await this.sendToAI(prompt);
+        return `📝 **Auto Comment Complete!**\n\nHere's your code with helpful comments added:\n\n${response}\n\n💡 **Tip**: Good comments help you and others understand your code later!`;
+    }
+
+    async assistDiagnosis(code) {
+        const prompt = `As an AI programming tutor, please perform a detailed diagnosis of this Python code. Analyze for:
+
+1. **Syntax Errors**: Any Python syntax mistakes
+2. **Logic Issues**: Problems with the program flow
+3. **Best Practices**: Ways to improve code quality
+4. **Potential Bugs**: Things that might cause errors
+5. **Performance**: Simple optimization suggestions
+
+Code to analyze:
+\`\`\`python\n${code}\n\`\`\`
+
+Please provide:
+- Clear explanations suitable for kids
+- Specific line numbers where issues exist
+- Simple solutions for each problem
+- Encouragement and positive feedback`;
+        
+        const response = await this.sendToAI(prompt);
+        return `🔍 **Code Diagnosis Complete!**\n\n${response}\n\n💪 Remember: Finding and fixing issues is part of becoming a better programmer!`;
+    }
+
+    async codeHealthCheck(code) {
+        const prompt = `As an AI programming tutor, please perform a comprehensive health check on this Python code. Evaluate:
+
+**Code Quality Metrics:**
+1. **Readability** (0-10): How easy is it to read and understand?
+2. **Structure** (0-10): Is the code well-organized?
+3. **Comments** (0-10): Are there helpful comments?
+4. **Variable Names** (0-10): Are variable names descriptive?
+5. **Error Handling** (0-10): Does it handle potential errors?
+6. **Efficiency** (0-10): How well does it perform?
+
+Code to check:
+\`\`\`python\n${code}\n\`\`\`
+
+Please provide:
+- Overall health score (0-100)
+- Individual scores for each metric
+- Specific recommendations for improvement
+- Positive encouragement for good practices found
+- Kid-friendly explanations with examples`;
+        
+        const response = await this.sendToAI(prompt);
+        return `🎩 **Code Health Check Results!**\n\n${response}\n\n🌟 Keep coding and improving - every line of code is a step toward mastery!`;
+    }
+
+    async autoCommentCodeDirect(code) {
+        try {
+            const prompt = `As an AI tutor for kids, please add helpful comments to this Python code. The comments should:
+1. Explain what each section does in simple terms
+2. Use kid-friendly language
+3. Include emojis to make it fun
+4. Help kids understand programming concepts
+
+Return ONLY the Python code with added comments, no extra text or markdown formatting:
+
+${code}`;
+            
+            const commentedCode = await this.sendToAI(prompt);
+            
+            // Clean up the response - remove markdown code blocks if present
+            const cleanCode = this.cleanCodeResponse(commentedCode);
+            
+            // Update the editor directly
+            if (window.editor && window.editor.setCode) {
+                window.editor.setCode(cleanCode);
+                this.hideTypingIndicator();
+                this.addMessage('📝 **Auto Comment Applied!** Your code has been updated with helpful comments directly in the editor! 🎉', 'ai');
+            } else {
+                throw new Error('Editor not available');
+            }
+            
+        } catch (error) {
+            this.hideTypingIndicator();
+            this.addMessage('Sorry, I had trouble adding comments to your code. Please try again!', 'ai', true);
+            console.error('Auto Comment Direct error:', error);
+        }
+    }
+
+    async autoSyntaxFixDirect(code) {
+        try {
+            const prompt = `As an AI programming tutor, please fix any syntax errors in this Python code. Rules:
+1. Fix ONLY syntax errors (missing colons, incorrect indentation, typos, etc.)
+2. Keep the original logic and functionality intact
+3. Use kid-friendly variable names if needed
+4. Add helpful comments explaining the fixes
+5. Make sure the code follows proper Python syntax
+
+Return ONLY the corrected Python code, no extra text or markdown formatting:
+
+${code}`;
+            
+            const fixedCode = await this.sendToAI(prompt);
+            
+            // Clean up the response
+            const cleanCode = this.cleanCodeResponse(fixedCode);
+            
+            // Check if there were actual changes
+            if (cleanCode.trim() !== code.trim()) {
+                // Update the editor directly
+                if (window.editor && window.editor.setCode) {
+                    window.editor.setCode(cleanCode);
+                    this.hideTypingIndicator();
+                    this.addMessage('🔧 **Syntax Fixed!** I found and fixed syntax errors in your code! Check your editor to see the improvements. ✨', 'ai');
+                } else {
+                    throw new Error('Editor not available');
+                }
+            } else {
+                this.hideTypingIndicator();
+                this.addMessage('🎉 **Great News!** Your code has no syntax errors! It\'s already properly formatted. Keep up the excellent work! 💪', 'ai');
+            }
+            
+        } catch (error) {
+            this.hideTypingIndicator();
+            this.addMessage('Sorry, I had trouble fixing your code syntax. Please try again!', 'ai', true);
+            console.error('Auto Syntax Fix error:', error);
+        }
+    }
+
+    cleanCodeResponse(response) {
+        // Remove markdown code blocks and extra formatting
+        let cleaned = response.trim();
+        
+        // Remove ```python and ``` markers
+        cleaned = cleaned.replace(/^```python\s*\n?/gm, '');
+        cleaned = cleaned.replace(/^```\s*$/gm, '');
+        
+        // Remove any leading/trailing whitespace from lines but preserve indentation
+        const lines = cleaned.split('\n');
+        const cleanedLines = lines.map(line => line.trimRight()); // Only trim right to preserve indentation
+        
+        return cleanedLines.join('\n').trim();
     }
 
     generateBugAnalysis(code) {
@@ -465,7 +721,7 @@ class AIAssistant {
     }
 
     showWelcomeMessage() {
-        const welcomeMessage = "Hello! I'm your AI programming assistant! 🤖✨\n\nI'm here to help you learn Python and AI programming. I can:\n\n• **Explain code** - Help you understand what your code does\n• **Find bugs** - Spot and fix errors in your programs  \n• **Suggest improvements** - Make your code cleaner and better\n• **Teach concepts** - Answer questions about Python and AI\n\nWhat would you like to work on today? 😊";
+        const welcomeMessage = "Hello! I'm your AI programming assistant! 🤖✨\n\nI'm here to help you learn Python and AI programming. I can:\n\n• **Explain code** - Help you understand what your code does\n• **Find bugs** - Spot and fix errors in your programs  \n• **Suggest improvements** - Make your code cleaner and better\n• **Teach concepts** - Answer questions about Python and AI\n\n**🎆 AI Features (Direct Code Editing):**\n• **Auto Comment** - Adds smart comments directly to your code\n• **Auto Syntax Fix** - Automatically fixes code errors in the editor\n• **Assist Diagnosis** - Deep analysis of code issues\n• **Health Check** - Comprehensive code quality assessment\n\nWhat would you like to work on today? 😊";
         
         setTimeout(() => {
             this.addMessage(welcomeMessage, 'ai');
@@ -534,6 +790,23 @@ class AIAssistant {
     onProjectChanged(project) {
         // Could add context about project change
         // this.addMessage(`Switched to project: ${project.title}`, 'system');
+    }
+
+    // Public methods for AI features
+    async runAutoComment() {
+        return this.handleAIFeature('auto-comment');
+    }
+
+    async runAutoSyntaxFix() {
+        return this.handleAIFeature('auto-syntax-fix');
+    }
+
+    async runAssistDiagnosis() {
+        return this.handleAIFeature('assist-diagnosis');
+    }
+
+    async runHealthCheck() {
+        return this.handleAIFeature('health-check');
     }
 }
 

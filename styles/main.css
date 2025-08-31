@@ -639,6 +639,56 @@ body {
     color: var(--text-primary);
 }
 
+/* AI Features Styling */
+.ai-features {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.ai-features h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ai-feature-btn {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--primary-color), #667eea);
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ai-feature-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    background: linear-gradient(135deg, #667eea, var(--primary-color));
+}
+
+.ai-feature-btn:active {
+    transform: translateY(0);
+}
+
+.ai-feature-btn:last-child {
+    margin-bottom: 0;
+}
+
 .ai-input-container {
     padding: 16px;
     border-top: 1px solid var(--border-color);
